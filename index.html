@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#ead7c1">
+    <title>Anita &amp; David — Save the Date</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --opening-time: 4s;
+            --beige: #f3dec9;
+            --gold: #9c642a;
+            --lace-height: 120dvh;
+            --lace-width: calc(var(--lace-height) / 4);
+            --lace-overlap: 50px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0
+        }
+
+        body {
+            overflow: hidden;
+            background: #f2dfc9;
+            color: var(--gold);
+            font-family: 'DM Sans', sans-serif
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            isolation: isolate;
+            background: #f4e1ca
+        }
+
+        .invitation {
+            position: absolute;
+            inset: 0;
+            display: block;
+            padding: 0;
+            background: #fbead8
+        }
+
+        .card {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: #fbead8;
+            overflow: hidden;
+        }
+
+        .card-logo {
+            opacity: 0;
+
+            transition:
+                opacity 1.5s ease,
+                transform 1.5s ease;
+
+            position: absolute;
+            left: 50%;
+            top: 27%;
+            transform: translateX(-50%) translateY(15px);
+            width: min(64vw, 640px);
+            height: 36%;
+            object-fit: contain;
+            filter: invert(35%) sepia(45%) saturate(850%) hue-rotate(355deg) brightness(97%);
+        }
+
+        .card-date {
+            opacity: 0;
+            transform: translateY(15px);
+
+            transition:
+                opacity 1s ease,
+                transform 1s ease;
+            position: absolute;
+            top: 64%;
+            width: 100%;
+            margin: 0;
+            text-align: center;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(24px, 4vmin, 45px);
+            letter-spacing: .16em;
+            color: #a76d2c;
+            white-space: nowrap
+        }
+
+        .card-date span {
+            font-size: .62em;
+            vertical-align: super;
+            letter-spacing: 0
+        }
+
+        .card-location {
+            position: absolute;
+            top: 70%;
+            width: 100%;
+            margin: 0;
+
+            text-align: center;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(20px, 3vmin, 34px);
+            font-weight: 400;
+            letter-spacing: .12em;
+            color: #b18452;
+
+            opacity: 0;
+            transform: translateY(15px);
+
+            transition:
+                opacity 1s ease,
+                transform 1s ease;
+        }
+
+        .card-divider {
+            opacity: 0;
+            transform: translateY(15px);
+
+            transition:
+                opacity 1s ease,
+                transform 1s ease;
+            position: absolute;
+            top: 75%;
+            left: 27%;
+            width: 46%;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            font-size: 18px;
+            justify-content: center;
+            color: #9d621e
+        }
+
+        .card-divider:before,
+        .card-divider:after {
+            content: '';
+            height: 1px;
+            flex: 1;
+            background: #b88444
+        }
+
+        .card-save {
+            opacity: 0;
+            transform: translateY(15px);
+
+            transition:
+                opacity 1s ease,
+                transform 1s ease;
+            position: absolute;
+            top: 80%;
+            width: 100%;
+            margin: 0;
+            text-align: center;
+            font: italic clamp(28px, 5vmin, 54px) 'Cormorant Garamond', Georgia, serif;
+            color: #9d632c
+        }
+
+        /* Date appears first */
+        .opened .card-logo {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            transition-delay:  0.8s;
+        }
+
+        /* Date appears first */
+        .opened .card-date {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 2.8s;
+        }
+
+        .opened .card-location {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 3.3s;
+        }
+
+        /* Heart divider appears second */
+        .opened .card-divider {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 3.8s;
+        }
+
+        /* Save the date appears last */
+        .opened .card-save {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 4.8s;
+        }
+
+        /* Canvas face plus visible lace fixed at the two touching center edges.
+   Lace moves with its own panel; original artwork is not edited. */
+        .panel {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            z-index: 2;
+            overflow: visible;
+
+            transition: transform var(--opening-time) ease-in-out;
+            will-change: transform;
+        }
+
+        .panel.left {
+            left: 0;
+        }
+
+        .panel.right {
+            right: 0;
+        }
+
+        .panel .canvas {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+
+            /* Canvas stops where the lace starts */
+            width: calc(100% - var(--lace-width) + var(--lace-overlap));
+
+            background-color: #f5e0c9;
+            background-image: url('assets/canvas_texture.png');
+            background-repeat: repeat;
+            background-size: 340px 340px;
+
+            z-index: 1;
+        }
+
+        .panel .lace {
+            position: absolute;
+            top: 50%;
+            height: var(--lace-height);
+            width: var(--lace-width);
+
+            transform: translateY(-50%);
+
+            z-index: 2;
+            pointer-events: none;
+
+            background-image: url('assets/lace.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+
+            filter:
+                drop-shadow(2px 2px 2px rgba(95, 65, 40, 0.35)) drop-shadow(5px 3px 6px rgba(95, 65, 40, 0.18));
+        }
+
+        /* Left curtain: lace faces center */
+        .panel.right .lace {
+            left: calc(var(--lace-overlap) * -1);
+            transform: translateY(-50%) scaleX(-1);
+        }
+
+        .panel.left .lace {
+            right: calc(var(--lace-overlap) * -1);
+        }
+
+        .panel.left .canvas {
+            left: 0;
+        }
+
+        .panel.right .canvas {
+            right: 0;
+        }
+
+        .opened .panel.left {
+            transform: translateX(-101%);
+        }
+
+        .opened .panel.right {
+            transform: translateX(101%);
+        }
+
+        .seal {
+            position: absolute;
+            z-index: 4;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(105px, 15vmin, 176px);
+            aspect-ratio: 1;
+            background: transparent;
+            border: 0;
+            padding: 0;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            opacity: 1;
+            transition: opacity .55s ease;
+            touch-action: manipulation
+        }
+
+        .seal img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 7px 8px rgba(73, 42, 20, .24))
+        }
+
+        .seal:hover img {
+            filter: drop-shadow(0 7px 8px rgba(73, 42, 20, .24)) brightness(1.07)
+        }
+
+        .seal:focus-visible,
+        .close:focus-visible {
+            outline: 3px solid #9c642a;
+            outline-offset: 5px
+        }
+
+        .opened .seal,
+        .seal[aria-hidden="true"] {
+            opacity: 0;
+            pointer-events: none
+        }
+
+        .hint {
+            position: absolute;
+            z-index: 4;
+            top: calc(50% + clamp(76px, 10vmin, 111px));
+            width: 100%;
+            margin: 0;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: .22em;
+            color: #825b3e;
+            pointer-events: none;
+            transition: opacity .3s
+        }
+
+        .opened .hint,
+        .scene:has(.seal[aria-hidden="true"]) .hint {
+            opacity: 0
+        }
+
+        .scene:not(.opened) .hint {
+            transition-delay: .55s
+        }
+
+        .close {
+            position: absolute;
+            z-index: 1;
+            bottom: max(12px, env(safe-area-inset-bottom) + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 248, 235, .94);
+            border: 1px solid #cba66f;
+            border-radius: 99px;
+            color: #78491c;
+            padding: 12px 24px;
+            font: 500 11px 'DM Sans', sans-serif;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .5s ease
+        }
+
+        .opened .close {
+            opacity: 1;
+            pointer-events: auto;
+            transition-delay: var(--opening-time)
+        }
+
+        @media(min-aspect-ratio:16/10) {
+            .card-logo {
+                width: min(54vw, 690px);
+                height: 38%;
+                top: 25%
+            }
+
+            .card-date {
+                top: 65%;
+            }
+
+            .card-location {
+                top: 71%;
+            }
+
+            .card-divider {
+                top: 76%;
+            }
+
+            .card-save {
+                top: 81%;
+            }
+        }
+
+        @media(max-width:520px) {
+            .card-logo {
+                top: 20%;
+                width: 76%;
+                height: 35%
+            }
+
+            .card-date {
+                top: 57%;
+                font-size: clamp(19px, 5.7vw, 30px)
+            }
+
+            .card-location {
+                top: 62%;
+            }
+
+            .card-divider {
+                top: 68%;
+            }
+
+            .card-save {
+                top: 74%;
+                font-size: clamp(24px, 6vw, 36px)
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            :root {
+                --opening-time: 2.5s
+            }
+
+            .card {
+                transition-duration: 2.5s
+            }
+
+            .close {
+                transition-delay: 0s
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="scene" id="scene">
+        <section class="invitation" aria-label="Anita and David wedding invitation">
+            <div class="card">
+                <img class="card-logo" src="assets/CompleteLogo.svg" alt="Anita and Dávid monogram and botanical logo">
+                <p class="card-date">Augusztus 7.</p>
+                <p class="card-location">Csesznek</p>
+                <div class="card-divider" aria-hidden="true">♥</div>
+                <p class="card-save">Részletek hamarosan</p>
+            </div>
+        </section>
+        <div class="panel left" aria-hidden="true">
+            <div class="lace"></div>
+            <div class="canvas"></div>
+        </div>
+        <div class="panel right" aria-hidden="true">
+            <div class="lace"></div>
+            <div class="canvas"></div>
+        </div>
+        <button class="seal" id="seal" type="button" aria-label="Open invitation"><img src="assets/Seal.png" alt=""
+                draggable="false"></button>
+        <p class="hint" aria-hidden="true">Kattints a pecsétre</p>
+        <button class="close" id="replay" type="button">Bezár</button>
+    </main>
+    <script>
+        const scene = document.getElementById('scene');
+        const seal = document.getElementById('seal');
+        const close = document.getElementById('replay');
+        const curtain = scene.querySelector('.panel.left');
+        const envelopeSound = new Audio('assets/open_envelope.mp3');
+        const music = new Audio('assets/wedding_music.mp3');
+        const envelopeVolume = 0.3;
+        const musicVolume = 0.2;
+
+        const envelopeStopTime = 2; // Stop envelope at 3 seconds
+        const crossfadeDuration = 1.5; // Last 1 second
+
+        envelopeSound.volume = envelopeVolume;
+        music.volume = 0;
+        music.loop = true;
+
+        let crossfadeStarted = false;
+        let fadeInterval = null;
+        let closing = false;
+
+        function startCrossfade() {
+            if (crossfadeStarted) return;
+            crossfadeStarted = true;
+
+            // Start background music
+            music.volume = 0;
+
+            music.play().catch(console.error);
+
+            const startTime = performance.now();
+
+            fadeInterval = setInterval(() => {
+                const elapsed = (performance.now() - startTime) / 1000;
+
+                const progress = Math.min(
+                    elapsed / crossfadeDuration,
+                    1
+                );
+
+                // Fade out envelope
+                envelopeSound.volume = envelopeVolume * (1 - progress);
+
+                // Fade in music
+                music.volume = musicVolume * progress;
+
+                if (progress >= 1) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+
+                    envelopeSound.pause();
+                    envelopeSound.currentTime = 0;
+                    envelopeSound.volume = envelopeVolume;
+                }
+            }, 30);
+        }
+
+
+        // Monitor envelope playback position
+        envelopeSound.addEventListener('timeupdate', () => {
+            if (
+                !crossfadeStarted &&
+                envelopeSound.currentTime >=
+                envelopeStopTime - crossfadeDuration
+            ) {
+                startCrossfade();
+            }
+        });
+
+        // Open invitation
+        seal.addEventListener('click', () => {
+            crossfadeStarted = false;
+
+            envelopeSound.currentTime = 0;
+            envelopeSound.volume = envelopeVolume;
+            envelopeSound.play().catch(console.error);
+
+            seal.setAttribute('aria-hidden', 'true');
+            scene.classList.add('opened');
+        });
+
+        close.addEventListener('click', () => {
+            clearInterval(fadeInterval);
+            fadeInterval = null;
+
+            crossfadeStarted = false;
+
+            envelopeSound.pause();
+            envelopeSound.currentTime = 0;
+            envelopeSound.volume = envelopeVolume;
+
+            music.pause();
+            music.currentTime = 0;
+            music.volume = 0;
+
+            if (closing || !scene.classList.contains('opened')) return;
+            closing = true; close.disabled = true;
+            scene.classList.remove('opened');
+            const finish = () => {seal.removeAttribute('aria-hidden'); close.disabled = false; closing = false;};
+            const onEnd = (event) => {
+                if (event.target !== curtain || event.propertyName !== 'transform') return;
+                curtain.removeEventListener('transitionend', onEnd);
+                finish();
+            };
+            curtain.addEventListener('transitionend', onEnd);
+        });
+    </script>
+</body>
+
+</html>
