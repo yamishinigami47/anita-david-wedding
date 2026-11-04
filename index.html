@@ -108,25 +108,53 @@
             letter-spacing: 0
         }
 
-        .card-location {
+        .card-calendar {
             position: absolute;
             top: 75%;
-            width: 100%;
-            margin: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(15px);
 
-            text-align: center;
             font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: clamp(20px, 3vmin, 34px);
+            font-size: clamp(20px, 2vmin, 34px);
             font-weight: 400;
             letter-spacing: .12em;
             color: #b18452;
 
+            display: inline-block;
+            background: transparent;
+            border: none;
+            padding: 4px 12px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            white-space: nowrap;
             opacity: 0;
-            transform: translateY(15px);
 
             transition:
                 opacity 1s ease,
-                transform 1s ease;
+                transform 1s ease,
+                color .3s ease,
+                text-shadow .3s ease;
+        }
+
+        .opened .card-calendar:hover {
+            color: #9c642a;
+            text-shadow: 0 2px 8px rgba(156, 100, 42, .25);
+            transform: translateX(-50%) translateY(-3px);
+            transition-delay: 0s;
+        }
+
+        .opened .card-calendar:active {
+            transform: translateX(-50%) translateY(1px) scale(.97);
+            color: #78491c;
+            transition-duration: .1s;
+            transition-delay: 0s;
+        }
+
+        .card-calendar:focus-visible {
+            outline: 1px solid #b18452;
+            outline-offset: 5px;
+            border-radius: 4px;
         }
 
         .card-divider {
@@ -186,9 +214,9 @@
             transition-delay: 2.8s;
         }
 
-        .opened .card-location {
+        .opened .card-calendar {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
             transition-delay: 3.8s;
         }
 
@@ -205,6 +233,7 @@
             transform: translateY(0);
             transition-delay: 4.8s;
         }
+
 
         /* Canvas face plus visible lace fixed at the two touching center edges.
    Lace moves with its own panel; original artwork is not edited. */
@@ -395,7 +424,7 @@
                 top: 65%;
             }
 
-            .card-location {
+            .card-calendar {
                 top: 76%;
             }
 
@@ -420,8 +449,9 @@
                 font-size: clamp(19px, 5.7vw, 30px)
             }
 
-            .card-location {
+            .card-calendar {
                 top: 68%;
+                font-size: clamp(18px, 4.5vw, 26px);
             }
 
             .card-divider {
@@ -432,6 +462,7 @@
                 top: 74%;
                 font-size: clamp(24px, 6vw, 36px)
             }
+
         }
 
         @media(prefers-reduced-motion:reduce) {
@@ -456,7 +487,7 @@
             <div class="card">
                 <img class="card-logo" src="assets/CompleteLogo.svg" alt="Anita and Dávid monogram and botanical logo">
                 <p class="card-date">Augusztus 7.</p>
-                <p class="card-location">Csesznek</p>
+                <a class="card-calendar" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Anita+%C3%A9s+D%C3%A1vid+esk%C3%BCv%C5%91je&amp;dates=20270807%2F20270808&amp;details=R%C3%A9szletek+hamarosan&amp;location=Csesznek%2C+Magyarorsz%C3%A1g" target="_blank" rel="noopener noreferrer">Hozzáadás a Google Naptárhoz</a>
                 <div class="card-divider" aria-hidden="true">♥</div>
                 <p class="card-save">Részletek hamarosan</p>
             </div>
